@@ -21,5 +21,15 @@ export default defineConfig({
     setupFiles: './src/test/setup.ts',
     include: ['src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
     exclude: ['node_modules', 'dist', 'tests/**/*'],
+    // Use threads pool on Windows to avoid EPERM errors
+    pool: 'threads',
+    poolOptions: {
+      threads: {
+        singleThread: false,
+        isolate: true,
+      },
+    },
+    // Increase timeout for Windows
+    testTimeout: 10000,
   },
 })

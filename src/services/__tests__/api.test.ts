@@ -27,9 +27,12 @@ describe('ApiService', () => {
 
       expect(result.status).toBe('ok')
       expect(result.message).toBe('Server is running')
-      expect(global.fetch).toHaveBeenCalledWith(
-        'https://d1tdizimiz2qsf.cloudfront.net/api/health'
-      )
+      // In development, uses /api (proxy), in production uses full URL
+      const expectedUrl =
+        import.meta.env.DEV
+          ? '/api/health'
+          : 'https://d1tdizimiz2qsf.cloudfront.net/api/health'
+      expect(global.fetch).toHaveBeenCalledWith(expectedUrl)
     })
 
     it('should throw error on failed request', async () => {
@@ -63,9 +66,12 @@ describe('ApiService', () => {
 
       expect(result.message).toContain('Practice API')
       expect(result.apiBase).toBeDefined()
-      expect(global.fetch).toHaveBeenCalledWith(
-        'https://d1tdizimiz2qsf.cloudfront.net/api/'
-      )
+      // In development, uses /api (proxy), in production uses full URL
+      const expectedUrl =
+        import.meta.env.DEV
+          ? '/api/'
+          : 'https://d1tdizimiz2qsf.cloudfront.net/api/'
+      expect(global.fetch).toHaveBeenCalledWith(expectedUrl)
     })
 
     it('should throw error on failed request', async () => {
@@ -97,9 +103,12 @@ describe('ApiService', () => {
       const result = await apiService.addNumbers(5, 3)
 
       expect(result.result).toBe(8)
-      expect(global.fetch).toHaveBeenCalledWith(
-        'https://d1tdizimiz2qsf.cloudfront.net/api/add?a=5&b=3'
-      )
+      // In development, uses /api (proxy), in production uses full URL
+      const expectedUrl =
+        import.meta.env.DEV
+          ? '/api/add?a=5&b=3'
+          : 'https://d1tdizimiz2qsf.cloudfront.net/api/add?a=5&b=3'
+      expect(global.fetch).toHaveBeenCalledWith(expectedUrl)
     })
 
     it('should return 400 error for invalid parameters', async () => {
