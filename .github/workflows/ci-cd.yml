@@ -122,12 +122,24 @@ jobs:
       - name: Determine build output directory
         id: build-dir
         run: |
+          echo "Checking build-output directory structure..."
+          ls -la build-output/ || echo "build-output is empty or doesn't exist"
+          
+          # Check for nested directories first (build-output/build or build-output/dist)
           if [ -d "build-output/build" ]; then
             echo "directory=build-output/build" >> $GITHUB_OUTPUT
+            echo "Found build directory at build-output/build"
           elif [ -d "build-output/dist" ]; then
             echo "directory=build-output/dist" >> $GITHUB_OUTPUT
+            echo "Found dist directory at build-output/dist"
+          # Check if files are directly in build-output (artifact extraction behavior)
+          elif [ -f "build-output/index.html" ] || [ -d "build-output/assets" ]; then
+            echo "directory=build-output" >> $GITHUB_OUTPUT
+            echo "Found build files directly in build-output"
           else
             echo "Build directory not found in artifacts!"
+            echo "Contents of build-output:"
+            ls -la build-output/ || echo "Directory is empty"
             exit 1
           fi
 
