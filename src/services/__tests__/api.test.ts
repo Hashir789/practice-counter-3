@@ -1,6 +1,11 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { ApiService } from '../api'
 
+// Define global for TypeScript
+declare const global: typeof globalThis & {
+  fetch: typeof fetch
+}
+
 describe('ApiService', () => {
   beforeEach(() => {
     vi.clearAllMocks()
@@ -28,10 +33,9 @@ describe('ApiService', () => {
       expect(result.status).toBe('ok')
       expect(result.message).toBe('Server is running')
       // In development, uses /api (proxy), in production uses full URL
-      const expectedUrl =
-        import.meta.env.DEV
-          ? '/api/health'
-          : 'https://d1tdizimiz2qsf.cloudfront.net/api/health'
+      const expectedUrl = import.meta.env.DEV
+        ? '/api/health'
+        : 'https://d1tdizimiz2qsf.cloudfront.net/api/health'
       expect(global.fetch).toHaveBeenCalledWith(expectedUrl)
     })
 
@@ -67,10 +71,9 @@ describe('ApiService', () => {
       expect(result.message).toContain('Practice API')
       expect(result.apiBase).toBeDefined()
       // In development, uses /api (proxy), in production uses full URL
-      const expectedUrl =
-        import.meta.env.DEV
-          ? '/api/'
-          : 'https://d1tdizimiz2qsf.cloudfront.net/api/'
+      const expectedUrl = import.meta.env.DEV
+        ? '/api/'
+        : 'https://d1tdizimiz2qsf.cloudfront.net/api/'
       expect(global.fetch).toHaveBeenCalledWith(expectedUrl)
     })
 
@@ -104,10 +107,9 @@ describe('ApiService', () => {
 
       expect(result.result).toBe(8)
       // In development, uses /api (proxy), in production uses full URL
-      const expectedUrl =
-        import.meta.env.DEV
-          ? '/api/add?a=5&b=3'
-          : 'https://d1tdizimiz2qsf.cloudfront.net/api/add?a=5&b=3'
+      const expectedUrl = import.meta.env.DEV
+        ? '/api/add?a=5&b=3'
+        : 'https://d1tdizimiz2qsf.cloudfront.net/api/add?a=5&b=3'
       expect(global.fetch).toHaveBeenCalledWith(expectedUrl)
     })
 

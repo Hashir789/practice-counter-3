@@ -1,6 +1,11 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { WebSocketService } from '../websocket'
 
+// Define global for TypeScript
+declare const global: typeof globalThis & {
+  WebSocket: typeof WebSocket
+}
+
 // Mock WebSocket
 class MockWebSocket {
   static CONNECTING = 0

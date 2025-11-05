@@ -1,4 +1,4 @@
-import { defineConfig } from 'vite'
+import { defineConfig } from 'vitest/config'
 import react from '@vitejs/plugin-react'
 
 // https://vite.dev/config/
@@ -23,12 +23,6 @@ export default defineConfig({
     exclude: ['node_modules', 'dist', 'tests/**/*'],
     // Use threads pool on Windows to avoid EPERM errors
     pool: 'threads',
-    poolOptions: {
-      threads: {
-        singleThread: false,
-        isolate: true,
-      },
-    },
     // Increase timeout for Windows
     testTimeout: 10000,
   },
