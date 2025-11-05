@@ -7,7 +7,7 @@ function App() {
   const [count, setCount] = useState(0)
 
   const handleIncrement = () => {
-    setCount((prevCount) => {
+    setCount(prevCount => {
       const newCount = prevCount + 1
       // Reset to 0 after reaching MAX_COUNT
       return newCount >= MAX_COUNT ? 0 : newCount
