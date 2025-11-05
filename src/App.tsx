@@ -16,7 +16,7 @@ function App() {
 
   return (
     <div className="app">
-      <h1>Counter App</h1>
+      <h1>Practice Counter App</h1>
       <div className="card">
         <div className="counter-display" data-testid="counter-display">
           Count: {count}
