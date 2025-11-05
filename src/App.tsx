@@ -6,6 +6,7 @@ const MAX_COUNT = 10
 function App() {
   const [count, setCount] = useState(0)
 
+  
   const handleIncrement = () => {
     setCount((prevCount) => {
       const newCount = prevCount + 1
