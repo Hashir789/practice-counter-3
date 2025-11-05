@@ -53,3 +53,155 @@
   color: #888;
   font-size: 0.9em;
 }
+
+.health-status {
+  padding: 0.75rem 1.5rem;
+  background-color: rgba(76, 175, 80, 0.2);
+  color: #4caf50;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  font-weight: 500;
+}
+
+.error {
+  padding: 0.75rem 1.5rem;
+  background-color: rgba(244, 67, 54, 0.2);
+  color: #f44336;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  font-weight: 500;
+}
+
+.add-button {
+  padding: 0.75em 2em;
+  font-size: 1.1em;
+  font-weight: 600;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.add-button:hover:not(:disabled) {
+  background-color: #45a049;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(76, 175, 80, 0.3);
+}
+
+.add-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.add-result {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #4caf50;
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  background-color: rgba(76, 175, 80, 0.1);
+  border-radius: 8px;
+}
+
+.card h2 {
+  margin: 0 0 1rem 0;
+  color: #646cff;
+}
+
+.connection-status {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.ws-status {
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 500;
+}
+
+.ws-status-connecting {
+  background-color: rgba(255, 193, 7, 0.2);
+  color: #ffc107;
+}
+
+.ws-status-connected {
+  background-color: rgba(76, 175, 80, 0.2);
+  color: #4caf50;
+}
+
+.ws-status-disconnected {
+  background-color: rgba(158, 158, 158, 0.2);
+  color: #9e9e9e;
+}
+
+.ws-status-error {
+  background-color: rgba(244, 67, 54, 0.2);
+  color: #f44336;
+}
+
+.ws-buttons {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.ws-button {
+  padding: 0.75em 2em;
+  font-size: 1em;
+  font-weight: 600;
+  background-color: #9c27b0;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.ws-button:hover:not(:disabled) {
+  background-color: #7b1fa2;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(156, 39, 176, 0.3);
+}
+
+.ws-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.ws-messages {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background-color: rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.ws-messages h3 {
+  margin: 0 0 0.75rem 0;
+  font-size: 1rem;
+  color: #646cff;
+}
+
+.ws-messages-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.ws-message {
+  padding: 0.5rem;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+  font-size: 0.9em;
+  font-family: monospace;
+}
+
+.ws-message-type {
+  font-weight: 600;
+  color: #9c27b0;
+}

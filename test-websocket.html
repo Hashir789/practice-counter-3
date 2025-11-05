@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CloudFront WebSocket Test</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 20px;
+    }
+    button {
+      background-color: #646cff;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 8px;
+      margin: 10px 5px;
+    }
+    button:hover {
+      background-color: #535bf2;
+    }
+    button:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+    #result {
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 8px;
+      background-color: #f5f5f5;
+      min-height: 100px;
+    }
+    .success {
+      background-color: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+    .error {
+      background-color: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+    .info {
+      background-color: #d1ecf1;
+      color: #0c5460;
+      border: 1px solid #bee5eb;
+    }
+    .status {
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    .details {
+      font-size: 14px;
+      margin-top: 10px;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+  <h1>🔌 CloudFront WebSocket Connection Test</h1>
+  <p>This tool tests if your CloudFront distribution has WebSocket support enabled.</p>
+  
+  <div>
+    <label for="wsUrl">WebSocket URL:</label><br>
+    <input 
+      type="text" 
+      id="wsUrl" 
+      value="wss://d1tdizimiz2qsf.cloudfront.net/api" 
+      style="width: 100%; padding: 8px; margin: 10px 0;"
+    >
+  </div>
+  
+  <button onclick="testWebSocket()" id="testBtn">Test WebSocket Connection</button>
+  <button onclick="clearResult()">Clear Results</button>
+  
+  <div id="result"></div>
+  
+  <script>
+    let ws = null;
+    
+    function testWebSocket() {
+      const resultDiv = document.getElementById('result');
+      const testBtn = document.getElementById('testBtn');
+      const wsUrl = document.getElementById('wsUrl').value;
+      
+      if (!wsUrl) {
+        resultDiv.innerHTML = '<div class="error">Please enter a WebSocket URL</div>';
+        return;
+      }
+      
+      testBtn.disabled = true;
+      resultDiv.innerHTML = '<div class="info">Testing connection to: ' + wsUrl + '...</div>';
+      
+      const startTime = Date.now();
+      
+      try {
+        ws = new WebSocket(wsUrl);
+        
+        ws.onopen = () => {
+          const duration = Date.now() - startTime;
+          resultDiv.innerHTML = `
+            <div class="success">
+              <div class="status">✅ SUCCESS: WebSocket Connection Established!</div>
+              <div class="details">
+Connection Time: ${duration}ms
+Status: OPEN (Code 101 - Switching Protocols)
+Protocol: ${ws.protocol || 'No subprotocol'}
+Ready State: ${getReadyStateText(ws.readyState)}
+
+✅ CloudFront appears to have WebSocket support enabled!
+✅ Backend WebSocket server is responding.
+
+You can now use WebSocket in your application.
+              </div>
+            </div>
+          `;
+          testBtn.disabled = false;
+          
+          // Send a test message
+          try {
+            ws.send(JSON.stringify({ type: 'test', message: 'Hello from WebSocket test' }));
+          } catch (e) {
+            console.log('Could not send test message:', e);
+          }
+          
+          // Close after 2 seconds
+          setTimeout(() => {
+            if (ws && ws.readyState === WebSocket.OPEN) {
+              ws.close();
+            }
+          }, 2000);
+        };
+        
+        ws.onerror = (error) => {
+          const duration = Date.now() - startTime;
+          resultDiv.innerHTML = `
+            <div class="error">
+              <div class="status">❌ FAILED: WebSocket Connection Failed</div>
+              <div class="details">
+Connection Time: ${duration}ms
+Ready State: ${getReadyStateText(ws.readyState)}
+
+Possible Reasons:
+1. CloudFront WebSocket support not enabled
+   → Check CloudFront Behaviors → Origin Request Policy
+   → Ensure "Upgrade" and "Connection" headers are forwarded
+
+2. Backend doesn't have WebSocket server
+   → Verify backend has WebSocket server running
+   → Check if WebSocket endpoint path is correct
+
+3. CloudFront blocking WebSocket upgrade
+   → Check CloudFront Cache Policy
+   → Verify WebSocket upgrade requests aren't cached
+
+4. Wrong endpoint path
+   → Try: /ws, /api/ws, /socket.io, or check backend docs
+
+5. Firewall or security group blocking
+   → Check AWS Security Groups
+   → Verify origin allows WebSocket connections
+              </div>
+            </div>
+          `;
+          testBtn.disabled = false;
+          console.error('WebSocket error:', error);
+        };
+        
+        ws.onclose = (event) => {
+          const duration = Date.now() - startTime;
+          let closeInfo = '';
+          
+          if (event.code === 1000) {
+            closeInfo = 'Normal closure (connection closed successfully)';
+          } else if (event.code === 1006) {
+            closeInfo = 'Abnormal closure - Connection refused. Server likely doesn\'t support WebSocket.';
+          } else if (event.code === 1002) {
+            closeInfo = 'Protocol error - WebSocket protocol mismatch.';
+          } else {
+            closeInfo = `Close code: ${event.code} - ${event.reason || 'No reason provided'}`;
+          }
+          
+          if (ws.readyState !== WebSocket.OPEN) {
+            // Only show close info if it wasn't a successful open-then-close
+            if (!resultDiv.innerHTML.includes('SUCCESS')) {
+              resultDiv.innerHTML += `
+                <div class="error" style="margin-top: 10px;">
+                  <div class="details">Connection closed: ${closeInfo}</div>
+                </div>
+              `;
+            }
+          }
+          
+          testBtn.disabled = false;
+        };
+        
+        ws.onmessage = (event) => {
+          console.log('WebSocket message received:', event.data);
+          resultDiv.innerHTML += `
+            <div class="success" style="margin-top: 10px;">
+              <div class="details">📨 Message received: ${event.data}</div>
+            </div>
+          `;
+        };
+        
+        // Timeout after 10 seconds
+        setTimeout(() => {
+          if (ws && ws.readyState !== WebSocket.OPEN) {
+            ws.close();
+            resultDiv.innerHTML = `
+              <div class="error">
+                <div class="status">⏱️ Connection Timeout</div>
+                <div class="details">
+Connection attempt timed out after 10 seconds.
+This usually means:
+- WebSocket server is not responding
+- CloudFront is blocking the connection
+- Network/firewall issues
+
+Please check CloudFront settings and backend WebSocket server.
+                </div>
+              </div>
+            `;
+            testBtn.disabled = false;
+          }
+        }, 10000);
+        
+      } catch (error) {
+        resultDiv.innerHTML = `
+          <div class="error">
+            <div class="status">❌ Error Creating WebSocket</div>
+            <div class="details">${error.message}</div>
+          </div>
+        `;
+        testBtn.disabled = false;
+      }
+    }
+    
+    function getReadyStateText(state) {
+      const states = {
+        0: 'CONNECTING',
+        1: 'OPEN',
+        2: 'CLOSING',
+        3: 'CLOSED'
+      };
+      return states[state] || 'UNKNOWN';
+    }
+    
+    function clearResult() {
+      document.getElementById('result').innerHTML = '';
+      if (ws) {
+        try {
+          ws.close();
+        } catch (e) {
+          // Ignore
+        }
+        ws = null;
+      }
+      document.getElementById('testBtn').disabled = false;
+    }
+    
+    // Auto-test on page load (optional)
+    // window.onload = () => testWebSocket();
+  </script>
+</body>
+</html>
+
