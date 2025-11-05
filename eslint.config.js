@@ -7,19 +7,16 @@ import prettierConfig from 'eslint-config-prettier'
 
 export default tseslint.config(
   { ignores: ['dist', 'node_modules', 'build', 'coverage', '.playwright'] },
+  js.configs.recommended,
+  ...tseslint.configs.recommended,
   {
     files: ['**/*.{ts,tsx}'],
-    extends: [
-      js.configs.recommended,
-      ...tseslint.configs.recommended,
-      reactHooks.configs.recommended,
-      prettierConfig,
-    ],
     languageOptions: {
       ecmaVersion: 2020,
       globals: globals.browser,
     },
     plugins: {
+      'react-hooks': reactHooks,
       'react-refresh': reactRefresh,
     },
     rules: {
@@ -29,5 +26,6 @@ export default tseslint.config(
         { allowConstantExport: true },
       ],
     },
-  }
+  },
+  prettierConfig
 )
